@@ -1,0 +1,32 @@
+[
+  {
+    "event_name": "explore_events_clicked",
+    "event_description": "User clicked the Explore Events button to view available events",
+    "file_path": "components/ExploreButton.tsx"
+  },
+  {
+    "event_name": "event_card_clicked",
+    "event_description": "User clicked on an event card to view event details",
+    "file_path": "components/EventCard.tsx"
+  },
+  {
+    "event_name": "nav_home_clicked",
+    "event_description": "User clicked Home link in navigation",
+    "file_path": "components/Navbar.tsx"
+  },
+  {
+    "event_name": "nav_events_clicked",
+    "event_description": "User clicked Events link in navigation",
+    "file_path": "components/Navbar.tsx"
+  },
+  {
+    "event_name": "nav_create_event_clicked",
+    "event_description": "User clicked Create Event link in navigation - top of funnel for event creation",
+    "file_path": "components/Navbar.tsx"
+  },
+  {
+    "event_name": "logo_clicked",
+    "event_description": "User clicked on the logo to return to home",
+    "file_path": "components/Navbar.tsx"
+  }
+]
