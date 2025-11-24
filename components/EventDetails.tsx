@@ -6,8 +6,8 @@ import Image from "next/image";
 import BookEvent from "@/components/BookEvent";
 import EventCard from "@/components/EventCard";
 import {cacheLife} from "next/cache";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+import Event from '@/database/event.model';
+import connectDB from "@/lib/mongodb";
 
 const EventDetailItem = ({ icon, alt, label }: { icon: string; alt: string; label: string; }) => (
     <div className="flex-row-gap-2 items-center">
@@ -40,19 +40,8 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
     cacheLife('hours');
     const slug = await params;
 
-    const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
-        next: { revalidate: 60 }
-    });
-
-    if (!request.ok) {
-        if (request.status === 404) {
-            notFound();
-        }
-        throw new Error(`Failed to fetch event: ${request.statusText}`);
-    }
-
-    const response = await request.json();
-    const event = response.event;
+    await connectDB();
+    const event = await Event.findOne({ slug }).lean();
 
     if (!event) {
         notFound();
