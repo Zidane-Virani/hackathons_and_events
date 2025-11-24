@@ -110,21 +110,25 @@ const EventSchema = new Schema<IEvent>(
 );
 
 // Pre-save hook for slug generation and data normalization
-EventSchema.pre('save', function () {
+EventSchema.pre('save', function (next) {
+  const event = this as IEvent;
+
   // Generate slug only if title changed or document is new
-  if (this.isModified('title') || this.isNew) {
-    this.slug = generateSlug(this.title);
+  if (event.isModified('title') || event.isNew) {
+    event.slug = generateSlug(event.title);
   }
 
   // Normalize date to ISO format if it's not already
-  if (this.isModified('date')) {
-    this.date = normalizeDate(this.date);
+  if (event.isModified('date')) {
+    event.date = normalizeDate(event.date);
   }
 
   // Normalize time format (HH:MM)
-  if (this.isModified('time')) {
-    this.time = normalizeTime(this.time);
+  if (event.isModified('time')) {
+    event.time = normalizeTime(event.time);
   }
+
+  next();
 });
 
 // Helper function to generate URL-friendly slug
@@ -152,30 +156,29 @@ function normalizeTime(timeString: string): string {
   // Handle various time formats and convert to HH:MM (24-hour format)
   const timeRegex = /^(\d{1,2}):(\d{2})(\s*(AM|PM))?$/i;
   const match = timeString.trim().match(timeRegex);
-  
+
   if (!match) {
     throw new Error('Invalid time format. Use HH:MM or HH:MM AM/PM');
   }
-  
+
   let hours = parseInt(match[1]);
   const minutes = match[2];
   const period = match[4]?.toUpperCase();
-  
+
   if (period) {
     // Convert 12-hour to 24-hour format
     if (period === 'PM' && hours !== 12) hours += 12;
     if (period === 'AM' && hours === 12) hours = 0;
   }
-  
+
   if (hours < 0 || hours > 23 || parseInt(minutes) < 0 || parseInt(minutes) > 59) {
     throw new Error('Invalid time values');
   }
-  
+
   return `${hours.toString().padStart(2, '0')}:${minutes}`;
 }
 
-// Create unique index on slug for better performance
-EventSchema.index({ slug: 1 }, { unique: true });
+// slug already has unique: true in schema definition, no need for duplicate index
 
 // Create compound index for common queries
 EventSchema.index({ date: 1, mode: 1 });
